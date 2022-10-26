@@ -1,6 +1,7 @@
 const data = {
   products: [
     {
+      _id: "1",
       name: "Nilkamal Chair",
       slug: "nilkamal-chair",
       category: "Chairs",
@@ -13,6 +14,7 @@ const data = {
       description: "High quality plastic chairs",
     },
     {
+      _id: "2",
       name: "Woodland Table",
       slug: "woodland-table",
       category: "Tables",
@@ -25,6 +27,7 @@ const data = {
       description: "High quality wooden table",
     },
     {
+      _id: "3",
       name: "Lenovo Laptop",
       slug: "lenovo-laptop",
       category: "Laptops",
@@ -38,6 +41,7 @@ const data = {
         "A newly launched laptop of lenovo with latest processor embedded",
     },
     {
+      _id: "4",
       name: "Iphone 13",
       slug: "iphone-13",
       category: "Mobiles",
