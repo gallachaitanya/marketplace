@@ -20,7 +20,7 @@ const data = {
       category: "Tables",
       image: "images/table1.jpg",
       price: 80,
-      countInStock: 1,
+      countInStock: 0,
       brand: "Woodland",
       rating: 4.5,
       numReviews: 11,
