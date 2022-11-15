@@ -8,6 +8,8 @@ import { useContext, useEffect, useState } from "react";
 import { Store } from "../Store";
 import { toast } from "react-toastify";
 import { getError } from "../utils";
+import PasswordStrengthBar from "react-password-strength-bar";
+import PasswordChecklist from "react-password-checklist";
 
 export default function SignupScreen() {
   const navigate = useNavigate();
@@ -35,8 +37,15 @@ export default function SignupScreen() {
       toast.error("Passwords do not match");
       return;
     }
-    const target = email.split("@")
-    if(target[1]!=="my.unt.edu"){
+    const validPassword = new RegExp(
+      "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$"
+    );
+    if (!validPassword.test(password)) {
+      toast.error("Password doesn't meet the minimum requirements");
+      return;
+    }
+    const target = email.split("@");
+    if (target[1] !== "my.unt.edu") {
       toast.error("Email should consist domain @my.unt.edu");
       return;
     }
@@ -80,6 +89,7 @@ export default function SignupScreen() {
             required
             onChange={(e) => setPassword(e.target.value)}
           />
+          <PasswordStrengthBar password={password} />
         </Form.Group>
         <Form.Group className='mb-3' controlId='confirmPassword'>
           <Form.Label>Confirm Password</Form.Label>
@@ -89,6 +99,12 @@ export default function SignupScreen() {
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
         </Form.Group>
+        <PasswordChecklist
+          rules={["minLength", "specialChar", "number", "capital", "match"]}
+          minLength={8}
+          value={password}
+          valueAgain={confirmPassword}
+        />
         <div className='mb-3'>
           <Button type='submit'>Sign Up</Button>
         </div>
