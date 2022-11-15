@@ -13,11 +13,11 @@ productRouter.get("/", async (req, res) => {
 productRouter.post(
   "/",
   isAuth,
-  isAdmin,
   expressAsyncHandler(async (req, res) => {
     const newProduct = new Product({
       name: "sample name " + Date.now(),
       slug: "sample-name-" + Date.now(),
+      user: req.user._id,
       image: "images/chair1.jpg",
       price: 0,
       category: "sample category",
@@ -35,7 +35,6 @@ productRouter.post(
 productRouter.put(
   "/:id",
   isAuth,
-  isAdmin,
   expressAsyncHandler(async (req, res) => {
     const productId = req.params.id;
     const product = await Product.findById(productId);
@@ -128,6 +127,20 @@ productRouter.get(
       countProducts,
       page,
       pages: Math.ceil(countProducts / pageSize),
+    });
+  })
+);
+
+productRouter.get(
+  "/user",
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+   
+    const products = await Product.find({ user: req.user._id })
+    const countProducts = await Product.countDocuments();
+    res.send({
+      products,
+      countProducts,
     });
   })
 );

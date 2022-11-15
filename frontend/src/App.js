@@ -34,6 +34,7 @@ import ProductEditScreen from "./screens/ProductEditScreen";
 import OrderListScreen from "./screens/OrderListScreen";
 import UserListScreen from "./screens/UserListScreen";
 import UserEditScreen from "./screens/UserEditScreen";
+import UserProductsScreen from "./screens/UserProductsScreen";
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -102,6 +103,9 @@ function App() {
                       </LinkContainer>
                       <LinkContainer to='/orderhistory'>
                         <NavDropdown.Item>Order History</NavDropdown.Item>
+                      </LinkContainer>
+                      <LinkContainer to='/createdproducts'>
+                        <NavDropdown.Item>Created Products</NavDropdown.Item>
                       </LinkContainer>
                       <NavDropdown.Divider />
                       <Link
@@ -190,6 +194,14 @@ function App() {
                 }
               ></Route>
               <Route
+                path='/createdproducts'
+                element={
+                  <ProtectedRoute>
+                    <UserProductsScreen />
+                  </ProtectedRoute>
+                }
+              ></Route>
+              <Route
                 path='/profile'
                 element={
                   <ProtectedRoute>
@@ -217,9 +229,9 @@ function App() {
               <Route
                 path='/admin/product/:id'
                 element={
-                  <AdminRoute>
+                  <ProtectedRoute>
                     <ProductEditScreen />
-                  </AdminRoute>
+                  </ProtectedRoute>
                 }
               ></Route>
               <Route

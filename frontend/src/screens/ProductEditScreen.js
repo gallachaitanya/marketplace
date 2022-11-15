@@ -43,6 +43,7 @@ export default function ProductEditScreen() {
   const navigate = useNavigate();
   const params = useParams(); // /product/:id
   const { id: productId } = params;
+  console.log(productId);
 
   const { state } = useContext(Store);
   const { userInfo } = state;

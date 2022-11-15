@@ -35,6 +35,11 @@ export default function SignupScreen() {
       toast.error("Passwords do not match");
       return;
     }
+    const target = email.split("@")
+    if(target[1]!=="my.unt.edu"){
+      toast.error("Email should consist domain @my.unt.edu");
+      return;
+    }
     try {
       const { data } = await Axios.post("/api/users/signup", {
         name,

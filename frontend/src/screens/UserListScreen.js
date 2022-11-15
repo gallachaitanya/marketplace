@@ -126,13 +126,14 @@ export default function UserListScreen() {
                     Edit
                   </Button>
                   &nbsp;
-                  <Button
-                    type='button'
-                    variant='light'
-                    onClick={() => deleteHandler(user)}
-                  >
-                    Delete
-                  </Button>
+                    <Button
+                      type='button'
+                      variant='light'
+                      disabled={user.email === "ChaitanyaGalla@my.unt.edu"}
+                      onClick={() => deleteHandler(user)}
+                    >
+                      Delete
+                    </Button>
                 </td>
               </tr>
             ))}
