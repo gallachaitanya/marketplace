@@ -1,3 +1,4 @@
+//import all the required libraries
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -35,10 +36,15 @@ import OrderListScreen from "./screens/OrderListScreen";
 import UserListScreen from "./screens/UserListScreen";
 import UserEditScreen from "./screens/UserEditScreen";
 import UserProductsScreen from "./screens/UserProductsScreen";
+import ChatBox from './components/ChatBox';
+import SupportScreen from "./screens/SupportScreen";
+import ProductCreateScreen from "./screens/ProductCreateScreen";
 
+//function to launch the app on the server
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { cart, userInfo } = state;
+  //function to handle the signout process
   const signoutHandler = () => {
     ctxDispatch({ type: "USER_SIGNOUT" });
     localStorage.removeItem("userInfo");
@@ -73,7 +79,7 @@ function App() {
       >
         <ToastContainer position='bottom-center' limit={1} />
         <header>
-          <Navbar bg='dark' varient='dark' expand='lg'>
+          <Navbar style={{ backgroundColor: '#e3f2fd' }} varient='dark' expand='lg'>
             <Container>
               <Button
                 variant='dark'
@@ -97,7 +103,7 @@ function App() {
                     )}
                   </Link>
                   {userInfo ? (
-                    <NavDropdown title={userInfo.name} id='basic-nav-dropdown'>
+                    <NavDropdown title={userInfo.name.split(' ')[0]} id='basic-nav-dropdown'>
                       <LinkContainer to='/profile'>
                         <NavDropdown.Item>User Profile</NavDropdown.Item>
                       </LinkContainer>
@@ -134,6 +140,9 @@ function App() {
                       </LinkContainer>
                       <LinkContainer to='/admin/users'>
                         <NavDropdown.Item>Users</NavDropdown.Item>
+                      </LinkContainer>
+                      <LinkContainer to='/admin/support'>
+                        <NavDropdown.Item>Support</NavDropdown.Item>
                       </LinkContainer>
                     </NavDropdown>
                   )}
@@ -209,6 +218,14 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path='/createproduct'
+                element={
+                  <ProtectedRoute>
+                    <ProductCreateScreen />
+                  </ProtectedRoute>
+                }
+              />
               {/* Admin Routes */}
               <Route
                 path='/admin/dashboard'
@@ -258,11 +275,20 @@ function App() {
                   </AdminRoute>
                 }
               ></Route>
+              <Route
+                path='/admin/support'
+                element={
+                  <AdminRoute>
+                    <SupportScreen />
+                  </AdminRoute>
+                }
+              ></Route>
             </Routes>
           </Container>
         </main>
-        <footer>
-          <div className='text-center'>All rights reserved</div>
+        <footer className="text-center">
+          {userInfo && !userInfo.isAdmin && <ChatBox userInfo={userInfo} />}
+          <div>All right reserved</div>{' '}
         </footer>
       </div>
     </BrowserRouter>

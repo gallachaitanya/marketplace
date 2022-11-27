@@ -1,7 +1,10 @@
+//import the required libraries
 import { createContext, useReducer } from "react";
 
+//creating a context named store
 export const Store = createContext();
 
+//initialising the initial states for all the keys in the store context
 const initialState = {
   userInfo: localStorage.getItem("userInfo")
     ? JSON.parse(localStorage.getItem("userInfo"))
@@ -19,6 +22,7 @@ const initialState = {
   },
 };
 
+//reducer for the store context
 function reducer(state, action) {
   switch (action.type) {
     case "CART_ADD_ITEM":
@@ -71,6 +75,7 @@ function reducer(state, action) {
   }
 }
 
+//function to provide the store context
 export function StoreProvider(props) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const value = { state, dispatch };

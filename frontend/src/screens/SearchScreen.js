@@ -1,3 +1,4 @@
+//importing all the required libraries
 import React, { useEffect, useReducer, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -12,6 +13,7 @@ import MessageBox from "../components/BoxMessage";
 import Button from "react-bootstrap/Button";
 import Product from "../components/Product";
 
+//reducer for the search screen
 const reducer = (state, action) => {
   switch (action.type) {
     case "FETCH_REQUEST":
@@ -70,6 +72,7 @@ export const ratings = [
   },
 ];
 
+//function to display the search screen
 export default function SearchScreen() {
   const navigate = useNavigate();
   const { search } = useLocation();
@@ -117,6 +120,7 @@ export default function SearchScreen() {
     fetchCategories();
   }, [dispatch]);
 
+  //function to filter a search query
   const getFilterUrl = (filter) => {
     const filterPage = filter.page || page;
     const filterCategory = filter.category || category;

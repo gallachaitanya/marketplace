@@ -1,3 +1,4 @@
+//importing all the required libraries
 import axios from "axios";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useReducer } from "react";
@@ -19,6 +20,7 @@ import { Store } from "../Store";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import { toast } from "react-toastify";
 
+//reducer for the product screen
 const reducer = (state, action) => {
   switch (action.type) {
     case "REFRESH_PRODUCT":
@@ -32,7 +34,12 @@ const reducer = (state, action) => {
     case "FETCH_REQUEST":
       return { ...state, loading: true };
     case "FETCH_SUCCESS":
-      return { ...state, product: action.payload, loading: false };
+      return {
+        ...state,
+        product: action.payload.product,
+        user: action.payload.user,
+        loading: false,
+      };
     case "FETCH_FAIL":
       return { ...state, loading: false, error: action.payload };
     default:
@@ -40,6 +47,7 @@ const reducer = (state, action) => {
   }
 };
 
+//function to display the product screen
 function ProductScreen() {
   let reviewsRef = useRef();
   const [rating, setRating] = useState(0);
@@ -50,7 +58,7 @@ function ProductScreen() {
   const params = useParams();
   const { slug } = params;
 
-  const [{ loading, error, product, loadingCreateReview }, dispatch] =
+  const [{ loading, error, product, user, loadingCreateReview }, dispatch] =
     useReducer(reducer, {
       loading: true,
       error: "",
@@ -78,8 +86,9 @@ function ProductScreen() {
     const fetchData = async () => {
       dispatch({ type: "FETCH_REQUEST" });
       try {
-        const result = await axios.get(`/api/products/slug/${slug}`);
-        dispatch({ type: "FETCH_SUCCESS", payload: result.data });
+        const { data } = await axios.get(`/api/products/slug/${slug}`);
+
+        dispatch({ type: "FETCH_SUCCESS", payload: data });
       } catch (err) {
         dispatch({ type: "FETCH_FAIL", payload: getError(err) });
       }
@@ -87,6 +96,7 @@ function ProductScreen() {
     fetchData();
   }, [slug]);
 
+  //handler to handle when a review is submitted
   const submitHandler = async (e) => {
     e.preventDefault();
     if (!comment || !rating) {
@@ -144,6 +154,15 @@ function ProductScreen() {
             </ListGroupItem>
             <ListGroupItem>
               <Rating rating={product.rating} numReviews={product.numReviews} />
+            </ListGroupItem>
+            <ListGroupItem>
+              <h4>Category:</h4>
+              <p>{product.category}</p>
+            </ListGroupItem>
+            <ListGroupItem>
+            <h4>Seller:</h4>
+              <p>{user.name}</p>
+              <p>{user.email}</p>
             </ListGroupItem>
             <ListGroup.Item>
               <Row xs={1} md={2} className='g-2'>

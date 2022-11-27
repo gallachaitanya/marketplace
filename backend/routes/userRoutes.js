@@ -1,11 +1,14 @@
+//importing the required libraries
 import express from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/userModel.js";
 import expressAsyncHandler from "express-async-handler";
 import { isAuth, generateToken, isAdmin } from "../utils.js";
 
+//creating the user router using the express library
 const userRouter = express.Router();
 
+//Endpoint to get all the registered users
 userRouter.get(
   "/",
   isAuth,
@@ -16,10 +19,10 @@ userRouter.get(
   })
 );
 
+//Endpoint to get a particular user by there id
 userRouter.get(
   "/:id",
   isAuth,
-  isAdmin,
   expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
     if (user) {
@@ -30,10 +33,10 @@ userRouter.get(
   })
 );
 
+//Endpoin to update the details of an user through there id
 userRouter.put(
   "/:id",
   isAuth,
-  isAdmin,
   expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
     if (user) {
@@ -48,25 +51,27 @@ userRouter.put(
   })
 );
 
+//Endpoint to delete a registered user through there id
 userRouter.delete(
-  '/:id',
+  "/:id",
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
     if (user) {
-      if (user.email === 'ChaitanyaGalla@my.unt.edu') {
-        res.status(400).send({ message: 'Can Not Delete Admin User' });
+      if (user.email === "ChaitanyaGalla@my.unt.edu") {
+        res.status(400).send({ message: "Can Not Delete Admin User" });
         return;
       }
       await user.remove();
-      res.send({ message: 'User Deleted' });
+      res.send({ message: "User Deleted" });
     } else {
-      res.status(404).send({ message: 'User Not Found' });
+      res.status(404).send({ message: "User Not Found" });
     }
   })
 );
 
+//Endpoint for the signin
 userRouter.post(
   "/signin",
   expressAsyncHandler(async (req, res) => {
@@ -87,6 +92,7 @@ userRouter.post(
   })
 );
 
+//Endpoint for signup
 userRouter.post(
   "/signup",
   expressAsyncHandler(async (req, res) => {
@@ -106,11 +112,12 @@ userRouter.post(
   })
 );
 
+//Endpoint to upadate the details of an user through id
 userRouter.put(
-  "/profile",
+  "/profile/:id",
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.params.id);
     if (user) {
       user.name = req.body.name || user.name;
       user.email = req.body.email || user.email;

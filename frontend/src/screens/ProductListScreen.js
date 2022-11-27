@@ -1,3 +1,4 @@
+//importing all the required libraries
 import React, { useContext, useEffect, useReducer } from "react";
 import axios from "axios";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -10,6 +11,7 @@ import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/BoxMessage";
 import { getError } from "../utils";
 
+//reducer for the product list screen
 const reducer = (state, action) => {
   switch (action.type) {
     case "FETCH_REQUEST":
@@ -51,6 +53,7 @@ const reducer = (state, action) => {
   }
 };
 
+//function to display the product list screen
 export default function ProductListScreen() {
   const [
     {
@@ -93,20 +96,11 @@ export default function ProductListScreen() {
     }
   }, [page, userInfo, successDelete]);
 
+  //handler to handle when a product is created
   const createHandler = async () => {
     if (window.confirm("Are you sure to create?")) {
       try {
-        dispatch({ type: "CREATE_REQUEST" });
-        const { data } = await axios.post(
-          "/api/products",
-          {},
-          {
-            headers: { Authorization: `Bearer ${userInfo.token}` },
-          }
-        );
-        toast.success("product created successfully");
-        dispatch({ type: "CREATE_SUCCESS" });
-        navigate(`/admin/product/${data.product._id}`);
+        navigate("/createproduct");
       } catch (err) {
         toast.error(getError(error));
         dispatch({
@@ -116,6 +110,7 @@ export default function ProductListScreen() {
     }
   };
 
+  //handler to delete a product
   const deleteHandler = async (product) => {
     if (window.confirm("Are you sure to delete?")) {
       try {

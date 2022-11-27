@@ -1,5 +1,7 @@
+//importing the required libraries
 import mongoose from "mongoose";
 
+// creating the order schema using the mongoose library
 const orderSchema = new mongoose.Schema(
   {
     orderItems: [
@@ -45,5 +47,6 @@ const orderSchema = new mongoose.Schema(
   }
 );
 
+//creating the order model using schema created above and export it to available outside
 const Order = mongoose.model("Order", orderSchema);
 export default Order;

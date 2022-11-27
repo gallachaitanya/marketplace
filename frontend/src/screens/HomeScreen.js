@@ -1,3 +1,4 @@
+//importing all the required libraries
 import { useEffect, useReducer } from "react";
 import axios from "axios";
 import logger from "use-reducer-logger";
@@ -8,6 +9,7 @@ import { Helmet } from "react-helmet-async";
 import LoadingBox from "../components/LoadingBox";
 import BoxMessage from "../components/BoxMessage";
 
+//reducer for the homescreen screen
 const reducer = (state, action) => {
   switch (action.type) {
     case "FETCH_REQUEST":
@@ -21,6 +23,7 @@ const reducer = (state, action) => {
   }
 };
 
+//function to display the Home screen
 function HomeScreen() {
   const [{ loading, error, products }, dispatch] = useReducer(logger(reducer), {
     loading: true,

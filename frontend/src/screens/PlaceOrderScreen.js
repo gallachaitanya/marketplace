@@ -1,3 +1,4 @@
+//importing all the required libraries
 import Axios from "axios";
 import React, { useContext, useEffect, useReducer } from "react";
 import {
@@ -16,6 +17,7 @@ import LoadingBox from "../components/LoadingBox";
 import { Store } from "../Store";
 import { getError } from "../utils";
 
+//reducer for the place order screen
 const reducer = (state, action) => {
   switch (action.type) {
     case "CREATE_REQUEST":
@@ -29,6 +31,7 @@ const reducer = (state, action) => {
   }
 };
 
+//function to display the order confirmation screen
 export default function PlaceOrderScreen() {
   const navigate = useNavigate();
   const [{ loading }, dispatch] = useReducer(reducer, {
@@ -45,6 +48,7 @@ export default function PlaceOrderScreen() {
   cart.taxPrice = round2(0.15 * cart.itemsPrice);
   cart.totalPrice = cart.itemsPrice + cart.shippingPrice + cart.taxPrice;
 
+  //handler to handle when an order is placed
   const placeOrderHandler = async () => {
     try {
       dispatch({ type: "CREATE_REQUEST" });

@@ -1,3 +1,4 @@
+//importing all the required libraries
 import axios from "axios";
 import { useContext } from "react";
 import {
@@ -13,6 +14,7 @@ import { Link, useNavigate } from "react-router-dom";
 import BoxMessage from "../components/BoxMessage";
 import { Store } from "../Store";
 
+//function to display the cart screen
 export default function CartScreen() {
   const navigate = useNavigate();
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -20,6 +22,7 @@ export default function CartScreen() {
     cart: { cartItems },
   } = state;
 
+  //handler to handle when a item quantity is increased
   const updateCartHandler = async (item, quantity) => {
     const { data } = await axios.get(`/api/products/${item._id}`);
     if (data.countInStock < quantity) {
@@ -32,10 +35,12 @@ export default function CartScreen() {
     });
   };
 
+  //handler to remove a item from the cart
   const removeItemHandler = (item) => {
     ctxDispatch({ type: "CART_REMOVE_ITEM", payload: item });
   };
 
+  //handler to handle the check out event
   const checkOutHandler = () => {
     navigate("/signin?redirect=/shipping");
   };

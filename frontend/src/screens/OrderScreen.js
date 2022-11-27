@@ -1,3 +1,4 @@
+//importing all the required libraries
 import axios from "axios";
 import React, { useContext, useEffect, useReducer } from "react";
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
@@ -15,6 +16,7 @@ import { getError } from "../utils";
 import { toast } from "react-toastify";
 import Button from "react-bootstrap/Button";
 
+//reducer for the order screen
 function reducer(state, action) {
   switch (action.type) {
     case "FETCH_REQUEST":
@@ -47,6 +49,8 @@ function reducer(state, action) {
       return state;
   }
 }
+
+//function to display the order screen
 export default function OrderScreen() {
   const { state } = useContext(Store);
   const { userInfo } = state;
@@ -76,6 +80,7 @@ export default function OrderScreen() {
 
   const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
+  //function to handle when an order is created
   function createOrder(data, actions) {
     return actions.order
       .create({
@@ -90,6 +95,7 @@ export default function OrderScreen() {
       });
   }
 
+  //function to handle when a paypal payment is approved
   function onApprove(data, actions) {
     return actions.order.capture().then(async function (details) {
       try {
@@ -109,6 +115,7 @@ export default function OrderScreen() {
       }
     });
   }
+  //function to handle when an error occurs
   function onError(err) {
     toast.error(getError(err));
   }
@@ -168,6 +175,7 @@ export default function OrderScreen() {
     successDeliver,
   ]);
 
+  //function to handle when an deliver order event is occurred
   async function deliverOrderHandler() {
     try {
       dispatch({ type: "DELIVER_REQUEST" });

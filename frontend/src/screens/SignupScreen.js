@@ -1,3 +1,4 @@
+//importing all the required libraries
 import Container from "react-bootstrap/Container";
 import Axios from "axios";
 import Button from "react-bootstrap/Button";
@@ -11,6 +12,7 @@ import { getError } from "../utils";
 import PasswordStrengthBar from "react-password-strength-bar";
 import PasswordChecklist from "react-password-checklist";
 
+//function to display the signUp screen
 export default function SignupScreen() {
   const navigate = useNavigate();
   const { search } = useLocation();
@@ -18,7 +20,8 @@ export default function SignupScreen() {
   const redirect = redirectUrl ? redirectUrl : "/";
 
   const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
+  const [firstname, setFirstName] = useState("");
+  const [lastname, setLastName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -31,6 +34,7 @@ export default function SignupScreen() {
     }
   }, [navigate, redirect, userInfo]);
 
+  //handler to handle the signUp process
   const submitHandler = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
@@ -45,6 +49,7 @@ export default function SignupScreen() {
       return;
     }
     const target = email.split("@");
+    const name = firstname + " " + lastname;
     if (target[1] !== "my.unt.edu") {
       toast.error("Email should consist domain @my.unt.edu");
       return;
@@ -70,9 +75,19 @@ export default function SignupScreen() {
       </Helmet>
       <h1 className='my-3'>Sign Up</h1>
       <Form onSubmit={submitHandler}>
-        <Form.Group className='mb-3' controlId='name'>
-          <Form.Label>Name</Form.Label>
-          <Form.Control required onChange={(e) => setName(e.target.value)} />
+        <Form.Group className='mb-3' controlId='firstname'>
+          <Form.Label>First Name</Form.Label>
+          <Form.Control
+            required
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+        </Form.Group>
+        <Form.Group className='mb-3' controlId='lastname'>
+          <Form.Label>Last Name</Form.Label>
+          <Form.Control
+            required
+            onChange={(e) => setLastName(e.target.value)}
+          />
         </Form.Group>
         <Form.Group className='mb-3' controlId='email'>
           <Form.Label>Email</Form.Label>

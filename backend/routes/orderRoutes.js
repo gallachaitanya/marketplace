@@ -1,3 +1,4 @@
+//importing the required libraries
 import express from "express";
 import expressAsyncHandler from "express-async-handler";
 import Order from "../models/orderModel.js";
@@ -5,8 +6,10 @@ import User from "../models/userModel.js";
 import Product from "../models/productModel.js";
 import { isAuth, isAdmin } from "../utils.js";
 
+//creating the order router using the express library
 const orderRouter = express.Router();
 
+//Endpoint to get all the orders done on the website
 orderRouter.get(
   "/",
   isAuth,
@@ -17,6 +20,7 @@ orderRouter.get(
   })
 );
 
+//Endpoint to post an order
 orderRouter.post(
   "/",
   isAuth,
@@ -37,6 +41,7 @@ orderRouter.post(
   })
 );
 
+//Endpoint to get the summary details of an order
 orderRouter.get(
   "/summary",
   isAuth,
@@ -81,6 +86,7 @@ orderRouter.get(
   })
 );
 
+//Endpoint to get all the orders done by an user
 orderRouter.get(
   "/mine",
   isAuth,
@@ -90,6 +96,7 @@ orderRouter.get(
   })
 );
 
+//Endpoint to get the details of an order through id
 orderRouter.get(
   "/:id",
   isAuth,
@@ -103,6 +110,7 @@ orderRouter.get(
   })
 );
 
+//Endpoint to update the delivery status of an order
 orderRouter.put(
   "/:id/deliver",
   isAuth,
@@ -119,6 +127,7 @@ orderRouter.put(
   })
 );
 
+//Endpoint to update the paid status of an order
 orderRouter.put(
   "/:id/pay",
   isAuth,
@@ -135,6 +144,16 @@ orderRouter.put(
       };
 
       const updatedOrder = await order.save();
+      const items = updatedOrder.orderItems;
+      items.forEach(async (item) => {
+        const user = await User.findById(updatedOrder.user._id);
+        const newProduct = Product.findByIdAndUpdate(item.product._id, {
+          countInStock: 0,
+          purchasedBy: user.name,
+          purchased: true,
+        });
+        await newProduct.update();
+      });
       res.send({ message: "Order Paid", order: updatedOrder });
     } else {
       res.status(404).send({ message: "Order Not Found" });
@@ -142,6 +161,7 @@ orderRouter.put(
   })
 );
 
+//Endpoint to delete an order
 orderRouter.delete(
   "/:id",
   isAuth,

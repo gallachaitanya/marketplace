@@ -1,37 +1,43 @@
+//importing the required libraries
 import express from "express";
 import Product from "../models/productModel.js";
+import User from "../models/userModel.js";
 import expressAsyncHandler from "express-async-handler";
 import { isAdmin, isAuth } from "../utils.js";
 
+//creating the product router using the express library
 const productRouter = express.Router();
 
+//Endpoint to get all the products
 productRouter.get("/", async (req, res) => {
   const products = await Product.find();
   res.send(products);
 });
 
+//Endpoint to create a product
 productRouter.post(
   "/",
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const newProduct = new Product({
-      name: "sample name " + Date.now(),
-      slug: "sample-name-" + Date.now(),
+      name: req.body.name,
+      slug: req.body.slug,
       user: req.user._id,
-      image: "images/chair1.jpg",
-      price: 0,
-      category: "sample category",
-      brand: "sample brand",
-      countInStock: 0,
+      image: req.body.image,
+      price: req.body.price,
+      category: req.body.category,
+      brand: req.body.brand,
+      countInStock: req.body.countInStock,
       rating: 0,
       numReviews: 0,
-      description: "sample description",
+      description: req.body.description,
     });
     const product = await newProduct.save();
     res.send({ message: "Product Created", product });
   })
 );
 
+//Endpoint to update the details of a product
 productRouter.put(
   "/:id",
   isAuth,
@@ -56,10 +62,10 @@ productRouter.put(
   })
 );
 
+//Endpoint to delete a product
 productRouter.delete(
   "/:id",
   isAuth,
-  isAdmin,
   expressAsyncHandler(async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (product) {
@@ -71,6 +77,7 @@ productRouter.delete(
   })
 );
 
+//Endpoint to post a review
 productRouter.post(
   "/:id/reviews",
   isAuth,
@@ -109,6 +116,7 @@ productRouter.post(
 
 const PAGE_SIZE = 3;
 
+//Endpoint to get all the posted products
 productRouter.get(
   "/admin",
   isAuth,
@@ -131,6 +139,7 @@ productRouter.get(
   })
 );
 
+//Endpoint to get all the posted all the products posted by an user
 productRouter.get(
   "/user",
   isAuth,
@@ -145,6 +154,7 @@ productRouter.get(
   })
 );
 
+//Endpoint to search a product
 productRouter.get(
   "/search",
   expressAsyncHandler(async (req, res) => {
@@ -223,6 +233,7 @@ productRouter.get(
   })
 );
 
+//Endpoint to get the all the available categories
 productRouter.get(
   "/categories",
   expressAsyncHandler(async (req, res) => {
@@ -231,15 +242,21 @@ productRouter.get(
   })
 );
 
+//Endpoint to get the details of a particular product through slug
 productRouter.get("/slug/:slug", async (req, res) => {
   const product = await Product.findOne({ slug: req.params.slug });
+  
   if (product) {
-    res.send(product);
+    const user = await User.findById(product.user._id);
+    if(user){
+      res.send({product,user});
+    }
   } else {
     res.status(404).send({ message: "Product Not Found" });
   }
 });
 
+//Endpoint to get the details of a particular product through id
 productRouter.get("/:id", async (req, res) => {
   const product = await Product.findById(req.params.id);
   if (product) {

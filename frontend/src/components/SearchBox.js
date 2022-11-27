@@ -1,3 +1,4 @@
+//importing all the required libraries
 import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -5,6 +6,7 @@ import InputGroup from "react-bootstrap/InputGroup";
 import FormControl from "react-bootstrap/FormControl";
 import { useNavigate } from "react-router-dom";
 
+//function to diplay and handle the queries on the search box
 export default function SearchBox() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");

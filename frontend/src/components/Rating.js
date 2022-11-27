@@ -1,3 +1,4 @@
+//function to display the rating of a product
 function Rating(props) {
   const { rating, numReviews, caption } = props;
   return (

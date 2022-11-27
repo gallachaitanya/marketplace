@@ -1,5 +1,7 @@
+//importing the required libraries
 import jwt from "jsonwebtoken";
 
+//function to create a authenticaed token 
 export const generateToken = (user) => {
   return jwt.sign(
     {
@@ -15,6 +17,7 @@ export const generateToken = (user) => {
   );
 };
 
+// function to authenticate an user
 export const isAuth = (req, res, next) => {
   const authorization = req.headers.authorization;
   if (authorization) {
@@ -32,6 +35,7 @@ export const isAuth = (req, res, next) => {
   }
 };
 
+// function to authenticate whether an user is admin or not
 export const isAdmin = (req, res, next) => {
   if (req.user && req.user.isAdmin) {
     next();

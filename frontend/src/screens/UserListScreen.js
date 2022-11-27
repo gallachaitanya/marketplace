@@ -1,3 +1,4 @@
+//importing all the required libraries
 import axios from "axios";
 import React, { useContext, useEffect, useReducer } from "react";
 import Button from "react-bootstrap/Button";
@@ -9,6 +10,7 @@ import { Store } from "../Store";
 import { getError } from "../utils";
 import { useNavigate } from "react-router-dom";
 
+//reducer for the user list screen
 const reducer = (state, action) => {
   switch (action.type) {
     case "FETCH_REQUEST":
@@ -37,6 +39,8 @@ const reducer = (state, action) => {
       return state;
   }
 };
+
+//function to display the list of user screen
 export default function UserListScreen() {
   const navigate = useNavigate();
   const [{ loading, error, users, loadingDelete, successDelete }, dispatch] =
@@ -70,6 +74,7 @@ export default function UserListScreen() {
     }
   }, [userInfo, successDelete]);
 
+  //handler to delete an user from the marketplace
   const deleteHandler = async (user) => {
     if (window.confirm("Are you sure to delete?")) {
       try {

@@ -1,3 +1,4 @@
+//importing all the required libraries
 import Container from "react-bootstrap/Container";
 import Axios from "axios";
 import Button from "react-bootstrap/Button";
@@ -9,6 +10,7 @@ import { Store } from "../Store";
 import { toast } from "react-toastify";
 import { getError } from "../utils";
 
+//function to display the signIn screen
 export default function SignInScreen() {
   const navigate = useNavigate();
   const { search } = useLocation();
@@ -27,6 +29,7 @@ export default function SignInScreen() {
     }
   }, [navigate, redirect, userInfo]);
 
+  //handler to handle the signIn process
   const submitHandler = async (e) => {
     e.preventDefault();
     try {

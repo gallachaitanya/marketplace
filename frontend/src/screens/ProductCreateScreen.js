@@ -1,6 +1,6 @@
 //importing all the required libraries
 import React, { useContext, useEffect, useReducer, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { Store } from "../Store";
@@ -13,7 +13,7 @@ import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/BoxMessage";
 import Button from "react-bootstrap/Button";
 
-//reducer for the product edit screen
+//reducer for the product create screen
 const reducer = (state, action) => {
   switch (action.type) {
     case "FETCH_REQUEST":
@@ -42,20 +42,20 @@ const reducer = (state, action) => {
   }
 };
 
-//function to display the product edit screen
-export default function ProductEditScreen() {
+//function to display the product create screen
+export default function ProductCreateScreen() {
   const navigate = useNavigate();
-  const params = useParams(); // /product/:id
-  const { id: productId } = params;
-  console.log(productId);
 
   const { state } = useContext(Store);
   const { userInfo } = state;
-  const [{ loading, error, loadingUpdate, loadingUpload }, dispatch] =
+  const [{ loading, error, loadingUpload }, dispatch] =
     useReducer(reducer, {
-      loading: true,
+      loading: false,
       error: "",
     });
+  useEffect(() => {
+    dispatch({ type: "FETCH_SUCCESS" });
+  }, []);
 
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
@@ -67,44 +67,17 @@ export default function ProductEditScreen() {
   const [brand, setBrand] = useState("");
   const [description, setDescription] = useState("");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        dispatch({ type: "FETCH_REQUEST" });
-        const { data } = await axios.get(`/api/products/${productId}`);
-        setName(data.name);
-        setSlug(data.slug);
-        setPrice(data.price);
-        setImage(data.image);
-        setImages(data.images);
-        setCategory(data.category);
-        setCountInStock(data.countInStock);
-        setBrand(data.brand);
-        setDescription(data.description);
-        dispatch({ type: "FETCH_SUCCESS" });
-      } catch (err) {
-        dispatch({
-          type: "FETCH_FAIL",
-          payload: getError(err),
-        });
-      }
-    };
-    fetchData();
-  }, [productId]);
-
-  //handler to handle when an product is edited
+  //handler to handle when an product is created
   const submitHandler = async (e) => {
     e.preventDefault();
-    if (name.length === 0) {
-      toast.error("Please fill out the required fields");
-      return;
+    if(name === ""){
+        alert("Please fill out this field");
     }
     try {
       dispatch({ type: "UPDATE_REQUEST" });
-      await axios.put(
-        `/api/products/${productId}`,
+      await axios.post(
+        `/api/products`,
         {
-          _id: productId,
           name,
           slug,
           price,
@@ -122,7 +95,7 @@ export default function ProductEditScreen() {
       dispatch({
         type: "UPDATE_SUCCESS",
       });
-      toast.success("Product updated successfully");
+      toast.success("product created successfully");
       navigate("/admin/products");
     } catch (err) {
       toast.error(getError(err));
@@ -167,30 +140,16 @@ export default function ProductEditScreen() {
   };
 
   //handler to delete a product
-  const deleteHandler = async (productId) => {
-    if (window.confirm("Are you sure to delete?")) {
-      try {
-        await axios.delete(`/api/products/${productId}`, {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        });
-        toast.success("product deleted successfully");
-        dispatch({ type: "DELETE_SUCCESS" });
-        navigate("/createdproducts");
-      } catch (err) {
-        toast.error(getError(error));
-        dispatch({
-          type: "DELETE_FAIL",
-        });
-      }
-    }
+  const cancelHandler = () => {
+    navigate("/admin/products");
   };
 
   return (
     <Container className='small-container'>
       <Helmet>
-        <title>Edit Product ${productId}</title>
+        <title>Create Product</title>
       </Helmet>
-      <h1>Edit Product {productId}</h1>
+      <h1>Create Product</h1>
 
       {loading ? (
         <LoadingBox></LoadingBox>
@@ -201,7 +160,6 @@ export default function ProductEditScreen() {
           <Form.Group className='mb-3' controlId='name'>
             <Form.Label>Name</Form.Label>
             <Form.Control
-              value={name}
               onChange={(e) => setName(e.target.value)}
               required
             />
@@ -209,7 +167,6 @@ export default function ProductEditScreen() {
           <Form.Group className='mb-3' controlId='slug'>
             <Form.Label>Slug</Form.Label>
             <Form.Control
-              value={slug}
               onChange={(e) => setSlug(e.target.value)}
               required
             />
@@ -217,16 +174,7 @@ export default function ProductEditScreen() {
           <Form.Group className='mb-3' controlId='name'>
             <Form.Label>Price</Form.Label>
             <Form.Control
-              value={price}
               onChange={(e) => setPrice(e.target.value)}
-              required
-            />
-          </Form.Group>
-          <Form.Group className='mb-3' controlId='image'>
-            <Form.Label>Image File</Form.Label>
-            <Form.Control
-              value={image}
-              onChange={(e) => setImage(e.target.value)}
               required
             />
           </Form.Group>
@@ -260,7 +208,6 @@ export default function ProductEditScreen() {
           <Form.Group className='mb-3' controlId='category'>
             <Form.Label>Category</Form.Label>
             <Form.Control
-              value={category}
               onChange={(e) => setCategory(e.target.value)}
               required
             />
@@ -268,7 +215,6 @@ export default function ProductEditScreen() {
           <Form.Group className='mb-3' controlId='brand'>
             <Form.Label>Brand</Form.Label>
             <Form.Control
-              value={brand}
               onChange={(e) => setBrand(e.target.value)}
               required
             />
@@ -276,7 +222,6 @@ export default function ProductEditScreen() {
           <Form.Group className='mb-3' controlId='countInStock'>
             <Form.Label>Count In Stock</Form.Label>
             <Form.Control
-              value={countInStock}
               onChange={(e) => setCountInStock(e.target.value)}
               required
             />
@@ -284,24 +229,22 @@ export default function ProductEditScreen() {
           <Form.Group className='mb-3' controlId='description'>
             <Form.Label>Description</Form.Label>
             <Form.Control
-              value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
             />
           </Form.Group>
           <div className='mb-3'>
-            <Button disabled={loadingUpdate} type='submit'>
-              Update
+            <Button type='submit'>
+              Create
             </Button>
             &nbsp;
             <Button
               type='button'
               variant='light'
-              onClick={() => deleteHandler(productId)}
+              onClick={() => cancelHandler()}
             >
-              Delete
+              Cancel
             </Button>
-            {loadingUpdate && <LoadingBox></LoadingBox>}
           </div>
         </Form>
       )}

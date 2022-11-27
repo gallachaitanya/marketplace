@@ -1,3 +1,4 @@
+//importing all the required libraries
 import axios from "axios";
 import React, { useContext, useEffect, useReducer, useState } from "react";
 import Form from "react-bootstrap/Form";
@@ -11,6 +12,7 @@ import MessageBox from "../components/BoxMessage";
 import { Store } from "../Store";
 import { getError } from "../utils";
 
+//reducer for the user edit screen
 const reducer = (state, action) => {
   switch (action.type) {
     case "FETCH_REQUEST":
@@ -30,6 +32,7 @@ const reducer = (state, action) => {
   }
 };
 
+//function to display the user edit screen
 export default function UserEditScreen() {
   const [{ loading, error, loadingUpdate }, dispatch] = useReducer(reducer, {
     loading: true,
@@ -43,7 +46,8 @@ export default function UserEditScreen() {
   const { id: userId } = params;
   const navigate = useNavigate();
 
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -54,7 +58,11 @@ export default function UserEditScreen() {
         const { data } = await axios.get(`/api/users/${userId}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
-        setName(data.name);
+        const names = data.name.split(" ");
+        const firstName = names[0];
+        const lastName = names[1];
+        setFirstName(firstName);
+        setLastName(lastName);
         setEmail(data.email);
         setIsAdmin(data.isAdmin);
         dispatch({ type: "FETCH_SUCCESS" });
@@ -68,8 +76,10 @@ export default function UserEditScreen() {
     fetchData();
   }, [userId, userInfo]);
 
+  //handler to handle when user profile is edited
   const submitHandler = async (e) => {
     e.preventDefault();
+    const name = firstName + lastName;
     try {
       dispatch({ type: "UPDATE_REQUEST" });
       await axios.put(
@@ -102,11 +112,19 @@ export default function UserEditScreen() {
         <MessageBox variant='danger'>{error}</MessageBox>
       ) : (
         <Form onSubmit={submitHandler}>
-          <Form.Group className='mb-3' controlId='name'>
-            <Form.Label>Name</Form.Label>
+          <Form.Group className='mb-3' controlId='firstname'>
+            <Form.Label>First Name</Form.Label>
             <Form.Control
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+            />
+          </Form.Group>
+          <Form.Group className='mb-3' controlId='lastname'>
+            <Form.Label>LastName</Form.Label>
+            <Form.Control
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
               required
             />
           </Form.Group>

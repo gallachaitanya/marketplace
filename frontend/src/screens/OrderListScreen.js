@@ -1,3 +1,4 @@
+//importing all the required libraries
 import axios from "axios";
 import React, { useContext, useEffect, useReducer } from "react";
 import Button from "react-bootstrap/Button";
@@ -9,6 +10,7 @@ import MessageBox from "../components/BoxMessage";
 import { Store } from "../Store";
 import { getError } from "../utils";
 
+//reducer for the order list screen
 const reducer = (state, action) => {
   switch (action.type) {
     case "FETCH_REQUEST":
@@ -37,6 +39,8 @@ const reducer = (state, action) => {
       return state;
   }
 };
+
+//function to display the order list screen
 export default function OrderListScreen() {
   const navigate = useNavigate();
   const { state } = useContext(Store);
@@ -69,6 +73,7 @@ export default function OrderListScreen() {
     }
   }, [userInfo, successDelete]);
 
+  //handler to handle when an order is deleted
   const deleteHandler = async (order) => {
     if (window.confirm("Are you sure to delete?")) {
       try {

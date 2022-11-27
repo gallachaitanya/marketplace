@@ -1,3 +1,4 @@
+//importing all the required libraries
 import { useContext } from "react";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
@@ -6,6 +7,7 @@ import Rating from "./Rating";
 import { Store } from "../Store";
 import axios from "axios";
 
+//function to display a product 
 function Product(props) {
   const { product } = props;
 
@@ -13,7 +15,7 @@ function Product(props) {
   const {
     cart: { cartItems },
   } = state;
-
+//handler for the add to cart event
   const addToCartHandler = async (item) => {
     const existItem = cartItems.find((x) => x._id === product._id);
     const quantity = existItem ? existItem.quantity + 1 : 1;
@@ -28,7 +30,7 @@ function Product(props) {
     });
   };
 
-  return (
+  return !product.purchased? (
     <Card>
       <Link to={`/product/${product.slug}`}>
         <img src={product.image} className='card-img-top' alt={product.name} />
@@ -48,7 +50,7 @@ function Product(props) {
         )}
       </Card.Body>
     </Card>
-  );
-}
+  ):(null)
+        }
 
 export default Product;

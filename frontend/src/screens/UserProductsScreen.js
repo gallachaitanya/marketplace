@@ -1,3 +1,4 @@
+//importing all the required libraries
 import React, { useContext, useEffect, useReducer } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +11,7 @@ import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/BoxMessage";
 import { getError } from "../utils";
 
+//reducer for the user products screen
 const reducer = (state, action) => {
   switch (action.type) {
     case "FETCH_REQUEST":
@@ -31,19 +33,30 @@ const reducer = (state, action) => {
       };
     case "CREATE_FAIL":
       return { ...state, loadingCreate: false };
+    case "DELETE_SUCCESS":
+      return {
+        ...state,
+        loadingDelete: false,
+        successDelete: true,
+      };
+    case "DELETE_FAIL":
+      return { ...state, loadingDelete: false };
+    case "DELETE_RESET":
+      return { ...state, loadingDelete: false, successDelete: false };
     default:
       return state;
   }
 };
 
+//function to display the user products screen
 export default function UserProductsScreen() {
-  const [{ loading, error, products, loadingCreate }, dispatch] = useReducer(
-    reducer,
-    {
-      loading: true,
-      error: "",
-    }
-  );
+  const [
+    { loading, error, products, loadingCreate, loadingDelete, successDelete },
+    dispatch,
+  ] = useReducer(reducer, {
+    loading: true,
+    error: "",
+  });
 
   const navigate = useNavigate();
 
@@ -60,27 +73,41 @@ export default function UserProductsScreen() {
         dispatch({ type: "FETCH_SUCCESS", payload: data });
       } catch (err) {}
     };
-    fetchData();
-  }, [userInfo]);
+    if (successDelete) {
+      dispatch({ type: "DELETE_RESET" });
+    } else {
+      fetchData();
+    }
+  }, [userInfo, successDelete]);
 
+  //handler to create a product
   const createHandler = async () => {
     if (window.confirm("Are you sure to create?")) {
       try {
         dispatch({ type: "CREATE_REQUEST" });
-        const { data } = await axios.post(
-          "/api/products",
-          {},
-          {
-            headers: { Authorization: `Bearer ${userInfo.token}` },
-          }
-        );
-        toast.success("product created successfully");
-        dispatch({ type: "CREATE_SUCCESS" });
-        navigate(`/admin/product/${data.product._id}`);
+        navigate("/createproduct");
       } catch (err) {
         toast.error(getError(error));
         dispatch({
           type: "CREATE_FAIL",
+        });
+      }
+    }
+  };
+
+  //handler to delete a product
+  const deleteHandler = async (product) => {
+    if (window.confirm("Are you sure to delete?")) {
+      try {
+        await axios.delete(`/api/products/${product._id}`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        toast.success("product deleted successfully");
+        dispatch({ type: "DELETE_SUCCESS" });
+      } catch (err) {
+        toast.error(getError(error));
+        dispatch({
+          type: "DELETE_FAIL",
         });
       }
     }
@@ -102,11 +129,16 @@ export default function UserProductsScreen() {
       </Row>
 
       {loadingCreate && <LoadingBox></LoadingBox>}
+      {loadingDelete && <LoadingBox></LoadingBox>}
 
       {loading ? (
         <LoadingBox></LoadingBox>
       ) : error ? (
         <MessageBox variant='danger'>{error}</MessageBox>
+      ) : Object.keys(products).length === 0 ? (
+        <div>
+          <h2>No Products Created</h2>
+        </div>
       ) : (
         <>
           <table className='table'>
@@ -117,6 +149,7 @@ export default function UserProductsScreen() {
                 <th>PRICE</th>
                 <th>CATEGORY</th>
                 <th>BRAND</th>
+                <th>PURCHASED</th>
                 <th>ACTIONS</th>
               </tr>
             </thead>
@@ -128,6 +161,11 @@ export default function UserProductsScreen() {
                   <td>{product.price}</td>
                   <td>{product.category}</td>
                   <td>{product.brand}</td>
+                  {product.purchasedBy ? (
+                    <td>{product.purchasedBy}</td>
+                  ) : (
+                    <td>No</td>
+                  )}
                   <td>
                     <Button
                       type='button'
@@ -135,6 +173,14 @@ export default function UserProductsScreen() {
                       onClick={() => navigate(`/admin/product/${product._id}`)}
                     >
                       Edit
+                    </Button>
+                    &nbsp;
+                    <Button
+                      type='button'
+                      variant='light'
+                      onClick={() => deleteHandler(product)}
+                    >
+                      Delete
                     </Button>
                   </td>
                 </tr>

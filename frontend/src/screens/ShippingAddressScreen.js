@@ -1,3 +1,4 @@
+//importing all the required libraries
 import React, { useContext, useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import Form from "react-bootstrap/Form";
@@ -6,6 +7,7 @@ import { Store } from "../Store";
 import { useNavigate } from "react-router-dom";
 import CheckoutSteps from "../components/CheckoutSteps";
 
+//function to display the shipping address screen
 export default function ShippingAddressScreen() {
   const navigate = useNavigate();
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -25,6 +27,8 @@ export default function ShippingAddressScreen() {
       navigate("/signin?redirect=/shipping");
     }
   }, [userInfo, navigate]);
+
+  //handler to handle when a shipping address is posted
   const submitHandler = (e) => {
     e.preventDefault();
     ctxDispatch({

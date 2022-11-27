@@ -1,3 +1,4 @@
+//importing all the required libraries
 import React, { useContext, useEffect, useReducer } from "react";
 import Chart from "react-google-charts";
 import axios from "axios";
@@ -9,6 +10,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 
+//reducer for the dashboard screen
 const reducer = (state, action) => {
   switch (action.type) {
     case "FETCH_REQUEST":
@@ -26,6 +28,7 @@ const reducer = (state, action) => {
   }
 };
 
+//function to display the dashboard screen
 export default function DashboardScreen() {
   const [{ loading, summary, error }, dispatch] = useReducer(reducer, {
     loading: true,

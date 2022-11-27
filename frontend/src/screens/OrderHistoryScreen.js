@@ -1,3 +1,4 @@
+//importing all the required libraries
 import React, { useContext, useEffect, useReducer } from "react";
 import { Helmet } from "react-helmet-async";
 import axios from "axios";
@@ -8,6 +9,7 @@ import { Store } from "../Store";
 import { getError } from "../utils";
 import { Button } from "react-bootstrap";
 
+//reducer for the order history screen
 const reducer = (state, action) => {
   switch (action.type) {
     case "FETCH_REQUEST":
@@ -21,6 +23,7 @@ const reducer = (state, action) => {
   }
 };
 
+//function to display the Order history screen
 export default function OrderHistoryScreen() {
   const { state } = useContext(Store);
   const { userInfo } = state;
