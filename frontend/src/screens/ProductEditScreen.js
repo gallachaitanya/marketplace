@@ -67,6 +67,8 @@ export default function ProductEditScreen() {
   const [brand, setBrand] = useState("");
   const [description, setDescription] = useState("");
 
+  const [validated, setValidated] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -94,11 +96,13 @@ export default function ProductEditScreen() {
 
   //handler to handle when an product is edited
   const submitHandler = async (e) => {
-    e.preventDefault();
-    if (name.length === 0) {
-      toast.error("Please fill out the required fields");
-      return;
+    const form = e.currentTarget;
+    if (form.checkValidity() === false) {
+      e.preventDefault();
+      e.stopPropagation();
     }
+
+    setValidated(true);
     try {
       dispatch({ type: "UPDATE_REQUEST" });
       await axios.put(
@@ -123,7 +127,11 @@ export default function ProductEditScreen() {
         type: "UPDATE_SUCCESS",
       });
       toast.success("Product updated successfully");
-      navigate("/admin/products");
+      if (userInfo.isAdmin) {
+        navigate("/admin/products");
+      } else {
+        navigate("/createdproducts");
+      }
     } catch (err) {
       toast.error(getError(err));
       dispatch({ type: "UPDATE_FAIL" });
@@ -166,22 +174,12 @@ export default function ProductEditScreen() {
     toast.success("Image removed successfully. click Update to apply it");
   };
 
-  //handler to delete a product
-  const deleteHandler = async (productId) => {
-    if (window.confirm("Are you sure to delete?")) {
-      try {
-        await axios.delete(`/api/products/${productId}`, {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        });
-        toast.success("product deleted successfully");
-        dispatch({ type: "DELETE_SUCCESS" });
-        navigate("/createdproducts");
-      } catch (err) {
-        toast.error(getError(error));
-        dispatch({
-          type: "DELETE_FAIL",
-        });
-      }
+  //handler to cancle edit product
+  const cancelHandler = () => {
+    if (userInfo.isAdmin) {
+      navigate("/admin/products");
+    } else {
+      navigate("/createdproducts");
     }
   };
 
@@ -197,7 +195,7 @@ export default function ProductEditScreen() {
       ) : error ? (
         <MessageBox variant='danger'>{error}</MessageBox>
       ) : (
-        <Form onSubmit={submitHandler}>
+        <Form noValidate validated={validated} onSubmit={submitHandler}>
           <Form.Group className='mb-3' controlId='name'>
             <Form.Label>Name</Form.Label>
             <Form.Control
@@ -205,6 +203,9 @@ export default function ProductEditScreen() {
               onChange={(e) => setName(e.target.value)}
               required
             />
+            <Form.Control.Feedback type='invalid'>
+              Please provide a Name.
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group className='mb-3' controlId='slug'>
             <Form.Label>Slug</Form.Label>
@@ -213,6 +214,9 @@ export default function ProductEditScreen() {
               onChange={(e) => setSlug(e.target.value)}
               required
             />
+            <Form.Control.Feedback type='invalid'>
+              Please provide a slug.
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group className='mb-3' controlId='name'>
             <Form.Label>Price</Form.Label>
@@ -221,6 +225,9 @@ export default function ProductEditScreen() {
               onChange={(e) => setPrice(e.target.value)}
               required
             />
+            <Form.Control.Feedback type='invalid'>
+              Please provide a product price.
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group className='mb-3' controlId='image'>
             <Form.Label>Image File</Form.Label>
@@ -229,6 +236,9 @@ export default function ProductEditScreen() {
               onChange={(e) => setImage(e.target.value)}
               required
             />
+            <Form.Control.Feedback type='invalid'>
+              Please upload a image.
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group className='mb-3' controlId='imageFile'>
             <Form.Label>Upload Image</Form.Label>
@@ -264,6 +274,9 @@ export default function ProductEditScreen() {
               onChange={(e) => setCategory(e.target.value)}
               required
             />
+            <Form.Control.Feedback type='invalid'>
+              Please provide a category.
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group className='mb-3' controlId='brand'>
             <Form.Label>Brand</Form.Label>
@@ -272,6 +285,9 @@ export default function ProductEditScreen() {
               onChange={(e) => setBrand(e.target.value)}
               required
             />
+            <Form.Control.Feedback type='invalid'>
+              Please provide the brand name.
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group className='mb-3' controlId='countInStock'>
             <Form.Label>Count In Stock</Form.Label>
@@ -280,6 +296,9 @@ export default function ProductEditScreen() {
               onChange={(e) => setCountInStock(e.target.value)}
               required
             />
+            <Form.Control.Feedback type='invalid'>
+              Please provide total count in stock.
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group className='mb-3' controlId='description'>
             <Form.Label>Description</Form.Label>
@@ -288,6 +307,9 @@ export default function ProductEditScreen() {
               onChange={(e) => setDescription(e.target.value)}
               required
             />
+            <Form.Control.Feedback type='invalid'>
+              Please provide a description.
+            </Form.Control.Feedback>
           </Form.Group>
           <div className='mb-3'>
             <Button disabled={loadingUpdate} type='submit'>
@@ -297,9 +319,9 @@ export default function ProductEditScreen() {
             <Button
               type='button'
               variant='light'
-              onClick={() => deleteHandler(productId)}
+              onClick={() => cancelHandler()}
             >
-              Delete
+              Cancel
             </Button>
             {loadingUpdate && <LoadingBox></LoadingBox>}
           </div>

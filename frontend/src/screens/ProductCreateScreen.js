@@ -48,11 +48,10 @@ export default function ProductCreateScreen() {
 
   const { state } = useContext(Store);
   const { userInfo } = state;
-  const [{ loading, error, loadingUpload }, dispatch] =
-    useReducer(reducer, {
-      loading: false,
-      error: "",
-    });
+  const [{ loading, error, loadingUpload }, dispatch] = useReducer(reducer, {
+    loading: false,
+    error: "",
+  });
   useEffect(() => {
     dispatch({ type: "FETCH_SUCCESS" });
   }, []);
@@ -67,12 +66,17 @@ export default function ProductCreateScreen() {
   const [brand, setBrand] = useState("");
   const [description, setDescription] = useState("");
 
+  const [validated, setValidated] = useState(false);
+
   //handler to handle when an product is created
   const submitHandler = async (e) => {
-    e.preventDefault();
-    if(name === ""){
-        alert("Please fill out this field");
+    const form = e.currentTarget;
+    if (form.checkValidity() === false) {
+      e.preventDefault();
+      e.stopPropagation();
     }
+
+    setValidated(true);
     try {
       dispatch({ type: "UPDATE_REQUEST" });
       await axios.post(
@@ -96,7 +100,11 @@ export default function ProductCreateScreen() {
         type: "UPDATE_SUCCESS",
       });
       toast.success("product created successfully");
-      navigate("/admin/products");
+      if (userInfo.isAdmin) {
+        navigate("/admin/products");
+      } else {
+        navigate("/createdproducts");
+      }
     } catch (err) {
       toast.error(getError(err));
       dispatch({ type: "UPDATE_FAIL" });
@@ -139,9 +147,13 @@ export default function ProductCreateScreen() {
     toast.success("Image removed successfully. click Update to apply it");
   };
 
-  //handler to delete a product
+  //handler to cancel create product
   const cancelHandler = () => {
-    navigate("/admin/products");
+    if (userInfo.isAdmin) {
+      navigate("/admin/products");
+    } else {
+      navigate("/createdproducts");
+    }
   };
 
   return (
@@ -156,32 +168,35 @@ export default function ProductCreateScreen() {
       ) : error ? (
         <MessageBox variant='danger'>{error}</MessageBox>
       ) : (
-        <Form onSubmit={submitHandler}>
+        <Form noValidate validated={validated} onSubmit={submitHandler}>
           <Form.Group className='mb-3' controlId='name'>
             <Form.Label>Name</Form.Label>
-            <Form.Control
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
+            <Form.Control onChange={(e) => setName(e.target.value)} required />
+            <Form.Control.Feedback type='invalid'>
+              Please provide a Name.
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group className='mb-3' controlId='slug'>
             <Form.Label>Slug</Form.Label>
-            <Form.Control
-              onChange={(e) => setSlug(e.target.value)}
-              required
-            />
+            <Form.Control onChange={(e) => setSlug(e.target.value)} required />
+            <Form.Control.Feedback type='invalid'>
+              Please provide a slug.
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group className='mb-3' controlId='name'>
             <Form.Label>Price</Form.Label>
-            <Form.Control
-              onChange={(e) => setPrice(e.target.value)}
-              required
-            />
+            <Form.Control onChange={(e) => setPrice(e.target.value)} required />
+            <Form.Control.Feedback type='invalid'>
+              Please provide a product price.
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group className='mb-3' controlId='imageFile'>
             <Form.Label>Upload Image</Form.Label>
             <Form.Control type='file' onChange={uploadFileHandler} />
             {loadingUpload && <LoadingBox></LoadingBox>}
+            <Form.Control.Feedback type='invalid'>
+              Please upload a image.
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group className='mb-3' controlId='additionalImage'>
             <Form.Label>Additional Images</Form.Label>
@@ -211,13 +226,16 @@ export default function ProductCreateScreen() {
               onChange={(e) => setCategory(e.target.value)}
               required
             />
+            <Form.Control.Feedback type='invalid'>
+              Please provide a category.
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group className='mb-3' controlId='brand'>
             <Form.Label>Brand</Form.Label>
-            <Form.Control
-              onChange={(e) => setBrand(e.target.value)}
-              required
-            />
+            <Form.Control onChange={(e) => setBrand(e.target.value)} required />
+            <Form.Control.Feedback type='invalid'>
+              Please provide the brand name.
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group className='mb-3' controlId='countInStock'>
             <Form.Label>Count In Stock</Form.Label>
@@ -225,6 +243,9 @@ export default function ProductCreateScreen() {
               onChange={(e) => setCountInStock(e.target.value)}
               required
             />
+            <Form.Control.Feedback type='invalid'>
+              Please provide total count in stock.
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group className='mb-3' controlId='description'>
             <Form.Label>Description</Form.Label>
@@ -232,11 +253,12 @@ export default function ProductCreateScreen() {
               onChange={(e) => setDescription(e.target.value)}
               required
             />
+            <Form.Control.Feedback type='invalid'>
+              Please provide a description.
+            </Form.Control.Feedback>
           </Form.Group>
           <div className='mb-3'>
-            <Button type='submit'>
-              Create
-            </Button>
+            <Button type='submit'>Create</Button>
             &nbsp;
             <Button
               type='button'

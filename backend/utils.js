@@ -1,7 +1,7 @@
 //importing the required libraries
 import jwt from "jsonwebtoken";
 
-//function to create a authenticaed token 
+//function to create a authenticaed token
 export const generateToken = (user) => {
   return jwt.sign(
     {
